@@ -1,10 +1,42 @@
 #!/usr/bin/env python3
-import re
-import json
-import os
-import shutil
+import re, json, os, shutil, sys, argparse
 from copy import copy, deepcopy
 from pdflatex import PDFLaTeX
+
+def exit_with_error(message):
+    print(f"\033[91mERROR: {message}\033[00m")
+    sys.exit(1)
+
+def main():
+    parser = argparse.ArgumentParser(description="Dynamic LaTeX generation from JSON")
+    parser.add_argument("input_tex", help="the LaTeX template file")
+    parser.add_argument("-i", "--input-json", help="the JSON file")
+    parser.add_argument("-o", "--output-dir", help="the directory for the output files", default=".")
+    parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
+    args = parser.parse_args()
+
+    if not os.path.exists(args.input_tex) or not args.input_tex.endswith(".tex"):
+        parser.print_usage()
+        exit_with_error("Couldn't open LaTeX template")
+    
+    if args.input_json:
+        input_json = args.input_json
+
+        if not os.path.exists(input_json):
+            exit_with_error("Input JSON: File does not exist")
+
+        elif os.path.isfile(input_json) and not input_json.endswith(".json"):
+            exit_with_error("Input JSON: Invalid file type")
+        
+        elif os.path.isdir(input_json):
+            dir_content = os.listdir(input_json)
+            if len(list(filter(lambda f: f.endswith(".json"), dir_content))) < 1:
+                exit_with_error("Input JSON: No JSON files found in folder")
+
+if __name__ == "__main__":
+    main()
+
+sys.exit(0)
 
 pdfname = "latex-template-engine"
 
