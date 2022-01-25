@@ -1,0 +1,28 @@
+\documentclass[12pt]{article}
+
+\begin{document}
+
+\section{<title>}
+
+<text>
+
+\subsection{<sub.title>}
+%startloop: sub.paragraphs
+<text>
+
+%endloop
+
+\subsection{Nested loops}
+
+\begin{itemize}
+	%startloop: nested
+	\item <name>
+	      \begin{itemize}
+		      %startloop: inside
+		      \item <name>
+		            %endloop
+	      \end{itemize}
+	      %endloop
+\end{itemize}
+
+\end{document}

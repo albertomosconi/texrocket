@@ -1,0 +1,28 @@
+{
+  "title": "LaTex Template Engine",
+  "text": "this is some example text different from the default one",
+  "sub": {
+    "title": "alternative subsection",
+    "paragraphs": [
+      { "text": "this is the  $\\alpha$ first paragraph text" },
+      { "text": "this is the second paragraph :) again" },
+      { "text": "wow even more paragraphs" }
+    ]
+  },
+  "nested": [
+    {
+      "name": "first outer",
+      "inside": [
+        { "name": "first inner of first" },
+        { "name": "second inner of first" }
+      ]
+    },
+    {
+      "name": "second outer",
+      "inside": [
+        { "name": "first inner of second" },
+        { "name": "second inner of second" }
+      ]
+    }
+  ]
+}

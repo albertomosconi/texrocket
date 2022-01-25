@@ -1,0 +1,27 @@
+{
+  "title": "LaTex Template \\latex Engine",
+  "text": "this is some example text",
+  "sub": {
+    "title": "my subsection title",
+    "paragraphs": [
+      { "text": "this is the first paragraph text" },
+      { "text": "this is the second paragraph :)" }
+    ]
+  },
+  "nested": [
+    {
+      "name": "first outer",
+      "inside": [
+        { "name": "first inner of first" },
+        { "name": "second inner of first" }
+      ]
+    },
+    {
+      "name": "second outer",
+      "inside": [
+        { "name": "first inner of second" },
+        { "name": "second inner of second" }
+      ]
+    }
+  ]
+}
