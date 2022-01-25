@@ -1,6 +1,6 @@
 # LaTeX Template Engine
 
-A basic template engine for LaTeX. Create dynamic LaTeX documents by parsing JSON data and populating a custom template.
+A basic template engine for LaTeX. Create dynamic documents by parsing JSON data and populating a custom template.
 
 The script parses a template and fills it with data read from json files. Provide different json files to have multiple files with the same structure but varying content. **Especially useful for translations**.
 
