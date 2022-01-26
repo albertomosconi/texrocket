@@ -7,30 +7,19 @@ The script parses a template and fills it with data read from json files. Provid
 ## Requirements
 Make sure you have the following programs installed on your system before moving forward.
 - [python](https://www.python.org/ "python.org")
-- [virtualenv](https://virtualenv.pypa.io/en/latest/ "virtualenv.pypa.org") (optional, but recommended)
+- LaTeX
 
-## Setup
+## Installation
 
-Clone this repository in a folder of your choice and cd into it
-```bash
-git clone https://github.com/albertomosconi/latex-template-engine.git
-cd latex-template-engine/
+Easily install TexRocket by using `pip`
+```shell
+pip install texrocket
 ```
-Create a virtual environment and activate it
-```bash
-virtualenv venv
-source venv/bin/activate
-```
-Install the dependencies
-```bash
-pip install -r requirements.txt
-```
-You're all set!
 
 ## Usage
-At any time you can run the script with the `-h` or `--help` flag to display usage information
+At any time you can run the `texrocket` script with the `-h` or `--help` flag to display usage information
 ```
-usage: build.py [-h] [-i INPUT_JSON] [-o OUTPUT_DIR] [-v] input_tex
+usage: texrocket [-h] [-i INPUT_JSON] [-o OUTPUT_DIR] [-v] input_tex
 
 Dynamic LaTeX generation from JSON, developed by Alberto Mosconi
 
@@ -48,19 +37,20 @@ options:
 
 An example using all possible arguments is
 ```bash
-python build.py example/TEMPLATE.tex -i example/ -o example/out/ -v
+texrocket example/TEMPLATE.tex -i example/ -o example/out/ -v
 ```
 This will create an `out/` folder, with the documents generated using the `TEMPLATE.tex` template and the values inside `input.json` 
 ```
 out/
 ├── source/
 │   └── TEMPLATE_input.tex
-├── TEMPLATE_input.log
+├── logs/
+│   └── TEMPLATE_input.log
 └── TEMPLATE_input.pdf
 ```
 **! All the JSON files MUST have the same structure**, the engine will create multiple documents (one for each `.json` file) starting from `TEMPLATE.tex`.
 
-The generaed files have the following naming scheme
+The generated files have the following naming scheme
 ```
 <TEMPLATE FILENAME>_<JSON FILENAME>.pdf
 ```
