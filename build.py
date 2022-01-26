@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import re, json, os, sys, argparse
+from pathlib import Path
 from pdflatex import PDFLaTeX
 
 def exit_with_error(message):
@@ -15,7 +16,7 @@ def setup_arg_parser():
     return parser.parse_args(), parser.print_usage
 
 def validate_args(args, print_usage):
-    if not os.path.exists(args.input_tex):
+    if not Path(args.input_tex).exists():
         print_usage()
         exit_with_error("LaTeX template: File does not exist")
 
@@ -24,28 +25,28 @@ def validate_args(args, print_usage):
         exit_with_error("LaTeX template: Invalid format")
 
     if args.input_json:
-        input_json = args.input_json
+        input_json = Path(args.input_json)
 
-        if not os.path.exists(input_json):
+        if not input_json.exists():
             print_usage()
             exit_with_error("Input JSON: File does not exist")
 
-        elif os.path.isfile(input_json) and not input_json.endswith(".json"):
+        elif input_json.is_file() and not input_json.suffix == ".json":
             print_usage()
             exit_with_error("Input JSON: Invalid file type")
         
-        elif os.path.isdir(input_json):
-            dir_content = os.listdir(input_json)
-            if len(list(filter(lambda f: f.endswith(".json"), dir_content))) < 1:
+        elif input_json.is_dir():
+            dir_content = Path.iterdir(input_json)
+            if len(list(filter(lambda f: f.suffix == ".json", dir_content))) < 1:
                 print_usage()
                 exit_with_error("Input JSON: No JSON files found in folder")
 
 def get_list_of_json_input_files(raw_dir_or_file):
     json_inputs = []
     if raw_dir_or_file:
-        if os.path.isdir(raw_dir_or_file):
-            filtered = list(filter(lambda f: f.endswith(".json"), os.listdir(raw_dir_or_file)))
-            json_inputs = [os.path.join(raw_dir_or_file, f) for f in filtered]
+        raw_dir_or_file = Path(raw_dir_or_file)
+        if raw_dir_or_file.is_dir():
+            json_inputs = list(filter(lambda f: f.suffix == ".json", Path.iterdir(raw_dir_or_file)))
         else:
             json_inputs = [raw_dir_or_file]
 
@@ -93,22 +94,24 @@ def handle_loop(start_index, object_list, all_lines, output_lines):
 
 def save_and_compile_tex(out_dir, filename, lines, logs=False):
     # create output folder if it doesnt exist
-    root_dir = os.getcwd()
-    complete_out_dir = os.path.join(root_dir, out_dir)
-    complete_source_out_dir = os.path.join(root_dir, out_dir, "source")
-    if not os.path.isdir(complete_source_out_dir):
-        os.makedirs(complete_source_out_dir)
+    root_dir = Path.cwd()
+    complete_out_dir = root_dir / out_dir
+    # print(complete_out_dir)
+    complete_source_out_dir = complete_out_dir / "source"
 
-    open(f"{os.path.join(complete_source_out_dir, filename)}.tex", "w").writelines(lines)
+    if not complete_source_out_dir.is_dir():
+        Path.mkdir(complete_source_out_dir)
+
+    open(f"{complete_source_out_dir / filename}.tex", "w").writelines(lines)
     if logs:
-        print(f"- saved source as {os.path.join(complete_source_out_dir, filename)}.tex")
+        print(f"- saved source as {complete_source_out_dir / filename}.tex")
 
     os.chdir(out_dir)
     # generate pdfs
-    pdfl = PDFLaTeX.from_texfile(f"{os.path.join(complete_source_out_dir, filename)}.tex")
+    pdfl = PDFLaTeX.from_texfile(f"{complete_source_out_dir / filename}.tex")
     pdfl.create_pdf(keep_pdf_file=True, keep_log_file=logs)
     if logs:
-        print(f"- generated pdf as {os.path.join(complete_out_dir, filename)}.pdf")
+        print(f"- generated pdf as {complete_out_dir / filename}.pdf")
     os.chdir(root_dir)
     return
 
@@ -117,18 +120,19 @@ def main():
     validate_args(args, print_usage)
     verbose_print = print if args.verbose else lambda *a, **k: None
 
+    template_file_lines = Path(args.input_tex).read_text().splitlines(keepends=True)
+    
     input_files = get_list_of_json_input_files(args.input_json)
-    template_file_lines = open(args.input_tex, 'r').readlines()
 
     if len(input_files) == 0:
         verbose_print("No JSON inputs were given, compiling LaTeX template directly...")
-        output_filename = f"{args.input_tex[:-4]}"
+        output_filename = f"{Path(args.input_tex).stem}"
         save_and_compile_tex(args.output_dir, output_filename, template_file_lines, logs=args.verbose)
 
     for json_file in input_files:
-        json_filename_no_ext = os.path.split(json_file)[1][:-5]
+        json_filename_no_ext = json_file.stem
         verbose_print(f"Begin processing '{json_filename_no_ext}.json'...", end="\r")
-        json_obj = json.load(open(json_file, 'r'))
+        json_obj = json.loads(json_file.read_text())
 
         line_number = 0
         output_lines = []
@@ -152,7 +156,7 @@ def main():
 
         verbose_print(f"Begin processing '{json_filename_no_ext}.json'... DONE")
         # write the parsed source file
-        output_filename = f"{os.path.basename(args.input_tex)[:-4]}"
+        output_filename = f"{Path(args.input_tex).stem}"
         if json_filename_no_ext != "main":
             output_filename += f"_{json_filename_no_ext}"
 
