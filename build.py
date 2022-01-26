@@ -7,31 +7,43 @@ def exit_with_error(message):
     print(f"\033[91mERROR: {message}\033[00m")
     sys.exit(1)
 
-def main():
+def setup_arg_parser():
     parser = argparse.ArgumentParser(description="Dynamic LaTeX generation from JSON")
     parser.add_argument("input_tex", help="the LaTeX template file")
     parser.add_argument("-i", "--input-json", help="the JSON file")
     parser.add_argument("-o", "--output-dir", help="the directory for the output files", default=".")
     parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
-    args = parser.parse_args()
+    return parser.parse_args(), parser.print_usage
 
-    if not os.path.exists(args.input_tex) or not args.input_tex.endswith(".tex"):
-        parser.print_usage()
-        exit_with_error("Couldn't open LaTeX template")
+def validate_args(args, print_usage):
+    if not os.path.exists(args.input_tex):
+        print_usage()
+        exit_with_error("LaTeX template: File does not exist")
+
+    elif not args.input_tex.endswith(".tex"):
+        print_usage()
+        exit_with_error("LaTeX template: Invalid format")
     
     if args.input_json:
         input_json = args.input_json
 
         if not os.path.exists(input_json):
+            print_usage()
             exit_with_error("Input JSON: File does not exist")
 
         elif os.path.isfile(input_json) and not input_json.endswith(".json"):
+            print_usage()
             exit_with_error("Input JSON: Invalid file type")
         
         elif os.path.isdir(input_json):
             dir_content = os.listdir(input_json)
             if len(list(filter(lambda f: f.endswith(".json"), dir_content))) < 1:
+                print_usage()
                 exit_with_error("Input JSON: No JSON files found in folder")
+
+def main():
+    args, print_usage = setup_arg_parser()
+    validate_args(args, print_usage)
 
 if __name__ == "__main__":
     main()
