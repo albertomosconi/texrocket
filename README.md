@@ -1,4 +1,4 @@
-<p align="center"><img src="assets/rocket.svg" width="100"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/albertomosconi/texrocket/main/assets/rocket.svg" width="100"></p>
 <h1 align="center">TexRocket</h1>
 
 A basic template engine for LaTeX. Create dynamic documents by parsing JSON data and populating a custom template.
