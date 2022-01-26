@@ -93,17 +93,22 @@ def handle_loop(start_index, object_list, all_lines, output_lines):
 
 def save_and_compile_tex(out_dir, filename, lines, logs=False):
     # create output folder if it doesnt exist
-    complete_out_dir = os.path.join(out_dir, "source")
-    if not os.path.isdir(complete_out_dir):
-        os.makedirs(complete_out_dir)
-
-    open(f"{os.path.join(complete_out_dir, filename)}.tex", "w").writelines(lines)
-
     root_dir = os.getcwd()
+    complete_out_dir = os.path.join(root_dir, out_dir)
+    complete_source_out_dir = os.path.join(root_dir, out_dir, "source")
+    if not os.path.isdir(complete_source_out_dir):
+        os.makedirs(complete_source_out_dir)
+
+    open(f"{os.path.join(complete_source_out_dir, filename)}.tex", "w").writelines(lines)
+    if logs:
+        print(f"- saved source as {os.path.join(complete_source_out_dir, filename)}.tex")
+
     os.chdir(out_dir)
     # generate pdfs
-    pdfl = PDFLaTeX.from_texfile(f"{os.path.join('source', filename)}.tex")
+    pdfl = PDFLaTeX.from_texfile(f"{os.path.join(complete_source_out_dir, filename)}.tex")
     pdfl.create_pdf(keep_pdf_file=True, keep_log_file=logs)
+    if logs:
+        print(f"- generated pdf as {os.path.join(complete_out_dir, filename)}.pdf")
     os.chdir(root_dir)
     return
 
@@ -122,7 +127,7 @@ def main():
 
     for json_file in input_files:
         json_filename_no_ext = os.path.split(json_file)[1][:-5]
-        verbose_print(f"Processing '{json_filename_no_ext}.json'...")
+        verbose_print(f"Begin processing '{json_filename_no_ext}.json'...", end="\r")
         json_obj = json.load(open(json_file, 'r'))
 
         line_number = 0
@@ -145,8 +150,9 @@ def main():
             output_lines.append(parsed_line)
             line_number += 1
 
+        verbose_print(f"Begin processing '{json_filename_no_ext}.json'... DONE")
         # write the parsed source file
-        output_filename = f"{args.input_tex[:-4]}"
+        output_filename = f"{os.path.basename(args.input_tex)[:-4]}"
         if json_filename_no_ext != "main":
             output_filename += f"_{json_filename_no_ext}"
 
