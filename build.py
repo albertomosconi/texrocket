@@ -7,11 +7,11 @@ def exit_with_error(message):
     sys.exit(1)
 
 def setup_arg_parser():
-    parser = argparse.ArgumentParser(description="Dynamic LaTeX generation from JSON")
+    parser = argparse.ArgumentParser(description="Dynamic LaTeX generation from JSON, developed by Alberto Mosconi")
     parser.add_argument("input_tex", help="the LaTeX template file")
-    parser.add_argument("-i", "--input-json", help="the JSON file")
+    parser.add_argument("-i", "--input-json", help="the JSON file or directory of files")
     parser.add_argument("-o", "--output-dir", help="the directory for the output files", default=".")
-    parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
+    parser.add_argument("-v", "--verbose", help="print verbose output and save LaTeX logs", action="store_true")
     return parser.parse_args(), parser.print_usage
 
 def validate_args(args, print_usage):
