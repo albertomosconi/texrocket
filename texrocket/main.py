@@ -163,6 +163,4 @@ def main():
         save_and_compile_tex(args.output_dir, output_filename, output_lines, logs=args.verbose)
         
     verbose_print("Done.")
-
-if __name__ == "__main__":
-    main()
+    
