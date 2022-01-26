@@ -7,7 +7,7 @@ The script parses a template and fills it with data read from json files. Provid
 ## Requirements
 Make sure you have the following programs installed on your system before moving forward.
 - [python](https://www.python.org/ "python.org")
-- [virtualenv](https://virtualenv.pypa.io/en/latest/ "virtualenv.pypa.org")
+- [virtualenv](https://virtualenv.pypa.io/en/latest/ "virtualenv.pypa.org") (optional, but recommended)
 
 ## Setup
 
@@ -28,17 +28,52 @@ pip install -r requirements.txt
 You're all set!
 
 ## Usage
-
-The `contents/` folder holds your JSON files that will be parsed, for example:
-```json
-{
-  "section": {
-    "title": "The section title",
-    "text": "some text"
-  }
-}
+At any time you can run the script with the `-h` or `--help` flag to display usage information
 ```
-**! All the JSON files MUST have the same structure**, the engine will create multiple documents (one for each `.json` file inside `contents/`) starting from `TEMPLATE.tex`.
+usage: build.py [-h] [-i INPUT_JSON] [-o OUTPUT_DIR] [-v] input_tex
+
+Dynamic LaTeX generation from JSON, developed by Alberto Mosconi
+
+positional arguments:
+  input_tex             the LaTeX template file
+
+options:
+  -h, --help            show this help message and exit
+  -i INPUT_JSON, --input-json INPUT_JSON
+                        the JSON file or directory of files
+  -o OUTPUT_DIR, --output-dir OUTPUT_DIR
+                        the directory for the output files
+  -v, --verbose         print verbose output and save LaTeX logs
+```
+
+An example using all possible arguments is
+```bash
+python build.py TEMPLATE.tex -i input.json -o out/ -v
+```
+This will create an `out/` folder, with the documents generated using the `TEMPLATE.tex` template and the values inside `input.json` 
+```
+.
+├── out/
+|   ├── source/
+|   │   ├── TEMPLATE_input.tex
+│   ├── TEMPLATE_input.log
+│   └── TEMPLATE_input.pdf
+├── build.py
+├── TEMPLATE.tex
+└── input.json
+```
+**! All the JSON files MUST have the same structure**, the engine will create multiple documents (one for each `.json` file) starting from `TEMPLATE.tex`.
+
+The generaed files have the following naming scheme
+```
+<TEMPLATE FILENAME>_<JSON FILENAME>.pdf
+```
+If the input JSON file is named `main.json` then this will not show up
+```
+<TEMPLATE FILENAME>.pdf
+```
+
+## Syntax
 
 ### Values
 
@@ -47,7 +82,15 @@ To display a certain JSON value reference it with the following syntax
 ```
 <section.title>
 ```
-With the example above, this will be rendered as `"The section title"`.
+```json
+{
+  "section": {
+    "title": "The section title",
+    "text": "some text"
+  }
+}
+```
+The example above will be rendered as `"The section title"`.
 
 ### Loops
 
@@ -82,11 +125,3 @@ You can avoid repetition of LaTeX code by using loops, which can be nested
   ]
 }
 ```
-
-### Execution
-
-To run the script and generate the documents simply execute
-```bash
-python build.py
-```
-The outputs will be in the `out/` folder.
