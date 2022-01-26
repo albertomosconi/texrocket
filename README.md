@@ -1,4 +1,4 @@
-# LaTeX Template Engine
+# TexRocket
 
 A basic template engine for LaTeX. Create dynamic documents by parsing JSON data and populating a custom template.
 
