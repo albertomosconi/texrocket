@@ -37,7 +37,7 @@ options:
 
 An example using all possible arguments is
 ```bash
-texrocket example/TEMPLATE.tex -i example/ -o example/out/ -v
+texrocket TEMPLATE.tex -i input.json -o out/ -v
 ```
 This will create an `out/` folder, with the documents generated using the `TEMPLATE.tex` template and the values inside `input.json` 
 ```
