@@ -101,13 +101,12 @@ def save_and_compile_tex(out_dir, filename, lines, logs=False):
     complete_logs_out_dir = complete_out_dir / "logs"
 
     if not complete_source_out_dir.is_dir():
-        Path.mkdir(complete_source_out_dir)
-
-    if not complete_logs_out_dir.is_dir():
-        Path.mkdir(complete_logs_out_dir)
+        Path.mkdir(complete_source_out_dir, parents=True)
 
     open(f"{complete_source_out_dir / filename}.tex", "w").writelines(lines)
     if logs:
+        if not complete_logs_out_dir.is_dir():
+            Path.mkdir(complete_logs_out_dir, parents=True)
         print(f"- saved source as {complete_source_out_dir / filename}.tex")
 
     with tempfile.TemporaryDirectory() as temp_dir:
