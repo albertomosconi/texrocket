@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-import re, json, os, sys, argparse
+import re, json, os, sys, argparse, subprocess, tempfile
+import shutil
 from pathlib import Path
-from pdflatex import PDFLaTeX
 
 def exit_with_error(message):
     print(f"\033[91mERROR: {message}\033[00m")
@@ -98,21 +98,32 @@ def save_and_compile_tex(out_dir, filename, lines, logs=False):
     complete_out_dir = root_dir / out_dir
     # print(complete_out_dir)
     complete_source_out_dir = complete_out_dir / "source"
+    complete_logs_out_dir = complete_out_dir / "logs"
 
     if not complete_source_out_dir.is_dir():
         Path.mkdir(complete_source_out_dir)
+
+    if not complete_logs_out_dir.is_dir():
+        Path.mkdir(complete_logs_out_dir)
 
     open(f"{complete_source_out_dir / filename}.tex", "w").writelines(lines)
     if logs:
         print(f"- saved source as {complete_source_out_dir / filename}.tex")
 
-    os.chdir(out_dir)
-    # generate pdfs
-    pdfl = PDFLaTeX.from_texfile(f"{complete_source_out_dir / filename}.tex")
-    pdfl.create_pdf(keep_pdf_file=True, keep_log_file=logs)
+    with tempfile.TemporaryDirectory() as temp_dir:
+        run_args = ['pdflatex', f"-output-directory={temp_dir}", "-jobname=file"]
+       
+        subprocess.run(
+            run_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=15,
+            input=Path(f"{complete_source_out_dir / filename}.tex").read_bytes())
+       
+        shutil.move(Path(temp_dir) / "file.pdf", f"{complete_out_dir / filename}.pdf" )
+        if logs:
+            shutil.move(Path(temp_dir) / "file.log", f"{complete_logs_out_dir / filename}.log" )
+
     if logs:
         print(f"- generated pdf as {complete_out_dir / filename}.pdf")
-    os.chdir(root_dir)
+
     return
 
 def main():
