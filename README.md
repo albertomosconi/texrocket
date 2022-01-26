@@ -48,19 +48,15 @@ options:
 
 An example using all possible arguments is
 ```bash
-python build.py TEMPLATE.tex -i input.json -o out/ -v
+python build.py example/TEMPLATE.tex -i example/ -o example/out/ -v
 ```
 This will create an `out/` folder, with the documents generated using the `TEMPLATE.tex` template and the values inside `input.json` 
 ```
-.
-├── out/
-|   ├── source/
-|   │   ├── TEMPLATE_input.tex
-│   ├── TEMPLATE_input.log
-│   └── TEMPLATE_input.pdf
-├── build.py
-├── TEMPLATE.tex
-└── input.json
+out/
+├── source/
+│   └── TEMPLATE_input.tex
+├── TEMPLATE_input.log
+└── TEMPLATE_input.pdf
 ```
 **! All the JSON files MUST have the same structure**, the engine will create multiple documents (one for each `.json` file) starting from `TEMPLATE.tex`.
 
